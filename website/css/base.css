@@ -1,0 +1,76 @@
+/*
+	Copyright 2013 - Geoffrey GUERET
+	http://www.colourlovers.com/palette/34448/2_Kool_for_Skool
+*/
+
+/* Import fonts */
+@import url(http://fonts.googleapis.com/css?family=PT+Serif:400,700);
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic);
+
+html {
+	font-size: 19px;
+}
+body {
+	font-family: 'PT Serif';
+	color: #363636;
+}
+a {
+	color: #C40000;
+	text-decoration: none;
+}
+
+pre {
+	font-size: 0.9em;
+	font-family: 'Ubuntu Mono';
+	padding: 1em;
+	background-color: #F2F2F2;
+}
+
+h1 span, h2 span, h3 span {
+	color: #ABABAB;
+	font-weight: normal;
+}
+
+h2, h3 {
+	color: #4F4F4F;
+}
+
+h1 {
+	color: #C40000;
+	font-weight: normal;
+	font-size: 6em;
+	margin: 0;
+}
+
+h2 {
+	font-size: 2em;
+}
+h3 {
+	font-weight: 700;
+	font-size: 28px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+
+}
+
+ul.nav {
+	font-size: 1.1em;
+	list-style-type: none;
+	padding-left: 0;
+	margin-top: 0;
+	margin-bottom: 2em;
+}
+ul.nav li {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+div#page {
+	background-color: #fff;
+	width: 700px;
+	margin: 0 auto;
+}
+
+div.intro {
+	font-size: 1.1em;
+}

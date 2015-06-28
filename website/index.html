@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>TaskMQ - Easy and fast messaging solution for Python</title>
+	<link rel="stylesheet" type="text/css" href="css/normalize.css">
+	<link rel="stylesheet" type="text/css" href="css/base.css">
+	<link rel="stylesheet" type="text/css" href="css/pygments.css">
+</head>
+<body>
+	<div id="page">
+		<h1>TaskMQ</h1>
+		<ul class="nav">
+			<li><a href="#">overview</a></li>
+			<li><a href="#">exemples</a></li>
+			<li><a href="#">docs</a></li>
+			<li><a href="#">deploy</a></li>
+		</ul>
+		<div class="intro">
+			<p>TaskMQ allow you to call remote tasks throught AMQP using Python. This library is axed on speed and simplicity, if you want more or less, just take a look to <a href="http://www.celeryproject.org">Celery</a> and <a href="http://kombu.readthedocs.org">Kombu</a>.</p>
+		</div>
+		<h3>A Consumer <span>(handle tasks)</span></h3>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">taskmq</span> <span class="kn">import</span> <span class="n">Consumer</span>
+<span class="c"># Declare the consumer.</span>
+<span class="n">consumer</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">()</span>
+<span class="c"># Declare a queue.</span>
+<span class="n">queue_1</span> <span class="o">=</span> <span class="n">consumer</span><span class="o">.</span><span class="n">queue</span><span class="p">(</span><span class="s">&#39;queue_1&#39;</span><span class="p">)</span>
+<span class="nd">@queue_1.register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">a_basic_addition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">print</span> <span class="s">&#39;got a call&#39;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">consumer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">consumer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+		<h3>A Producer <span>(call tasks)</span></h3>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">taskmq</span> <span class="kn">import</span> <span class="n">Producer</span>
+<span class="c"># Declare the producer.</span>
+<span class="n">producer</span> <span class="o">=</span> <span class="n">Producer</span><span class="p">()</span>
+<span class="c"># Configure the producer.</span>
+<span class="n">producer</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">routing_key</span> <span class="o">=</span> <span class="s">&#39;queue_1&#39;</span>
+<span class="n">producer</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">reply_key</span> <span class="o">=</span> <span class="s">&#39;queue_1_replies&#39;</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="c"># Call a task using config options.</span>
+    <span class="n">producer</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s">&#39;a_basic_addition&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+		<h3>An Observer <span>(follow and react)</span></h3>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">taskmq</span> <span class="kn">import</span> <span class="n">Observer</span>
+<span class="c"># Declare the observer.</span>
+<span class="n">observer</span> <span class="o">=</span> <span class="n">Observer</span><span class="p">()</span>
+<span class="c"># Declare the queue to observe.</span>
+<span class="n">queue_1_replies</span> <span class="o">=</span> <span class="n">observer</span><span class="o">.</span><span class="n">queue</span><span class="p">(</span><span class="s">&#39;queue_1_replies&#39;</span><span class="p">)</span>
+<span class="nd">@queue_1_replies.observe</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">handle_replies</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">message</span><span class="o">.</span><span class="n">state</span>
+    <span class="k">print</span> <span class="s">&#39;got a reply&#39;</span>
+    <span class="n">message</span><span class="o">.</span><span class="n">ack</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">observer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">observer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+	</div>
+</body>
+</html>
